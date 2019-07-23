@@ -8,6 +8,9 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from passlib.hash import bcrypt
+import pyodbc
+from travelSchedulerBackend import database
 
 
 class Ui_MainWindow(object):
@@ -15,6 +18,10 @@ class Ui_MainWindow(object):
     def login(self):
         username = self.lineEdit.text()
         password = self.lineEdit_2.text()
+        myDatabase = database('travelschedulerserver.database.windows.net','TravelScheduler','TravelSchedulerServer','INSERTPASSWORDHERE')
+        ogPassword = myDatabase.getPassword(username)
+        print (bcrypt.verify(password, ogPassword))
+
         #Compare the passwords
         #Create a box seaying login successful or something and redirect to Dashboard
 

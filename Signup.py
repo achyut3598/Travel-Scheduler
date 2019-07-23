@@ -8,24 +8,27 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-import hashlib
+from passlib.hash import bcrypt
 import uuid
+import pyodbc
+from travelSchedulerBackend import database
 
 class Ui_MainWindow(object):
 
     def signup (self):
-        fullName = self.lineEdit.text()
-        username = self.lineEdit_2.text()
-        email = self.lineEdit_3.text()
-        password = self.lineEdit_4.text()
-        address = self.lineEdit_5.text()
-        hash = hashlib.sha256(password.encode())
-        #salt needs to be stored in the database as a column
-        salt = uuid.uuid4().hex
-        hashedPass = hash.hexdigest() + salt
-        f= open("data.txt","w")
-        f.write("Name:" + fullName + '\n' + "Username:" + username + '\n' + "Email Address:" + email + '\n' + "Password:" + hashedPass + '\n' + "Address:" + address)
-        f.close()
+        myFullName = self.lineEdit.text()
+        myUsername = self.lineEdit_2.text()
+        myEmail = self.lineEdit_3.text()
+        myPassword = self.lineEdit_4.text()
+        myAddress = self.lineEdit_5.text()
+        myTimeOffSet = 0 #0 for now
+        hashedPass = bcrypt.hash(myPassword)
+        myDatabase = database('travelschedulerserver.database.windows.net','TravelScheduler','TravelSchedulerServer',INSERTPASSWORDHERE)
+        myDatabase.addUser(myUsername,hashedPass,myAddress,myEmail,myFullName, myTimeOffSet)
+
+        #f= open("data.txt","w")
+        #f.write("Name:" + fullName + '\n' + "Username:" + username + '\n' + "Email Address:" + email + '\n' + "Password:" + hashedPass + '\n' + "Address:" + address)
+        #f.close()
         #Create a box seaying signup successful or something and redirect to Dashboard
 
     def setupUi(self, MainWindow):

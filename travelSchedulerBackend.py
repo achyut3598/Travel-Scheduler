@@ -146,7 +146,6 @@ class database:
     def getPassword(self, myUsername):
         self.cursor.execute("select Password FROM Login WHERE Username = ?",myUsername)
         row = self.cursor.fetchone()
-        print(row.Password) #Testing Only
         return row.Password
 
     def getUserInfo(self, myUsername):
@@ -160,7 +159,7 @@ class database:
 
         if(len(myUsername) > 20):
             addCheck = False
-        if(len(myPassword) != 64):
+        if(len(myPassword) < 32):
             addCheck = False
         if(len(myAddress) > 100):
             addCheck = False
@@ -170,6 +169,7 @@ class database:
             addCheck = False
 
         if(addCheck == True):
+            print ("Success")
             self.cursor.execute("INSERT INTO Login(Username, Password) values (?,?) ",myUsername,myPassword)
             self.cursor.execute("INSERT INTO UserInfo(Username, Address, Email, Fullname, TimeOffSet) values (?,?,?,?,?) ",myUsername,myAddress,myEmail,myFullName,myTimeOffSet)
             self.cnxn.commit()
@@ -181,13 +181,13 @@ myEventList = [myEvent]
 myCalendar = calendar(myEventList)
 myCalendar.addEvent(myOtherEvent)
 myUser = user("Mathew", "237 Calhoun St, Cincinnati, OH 45219", myCalendar, datetime.timedelta(minutes=15))
-print("You should leave at")
-print(myUser.getTTL(0))
+#print("You should leave at")
+#print(myUser.getTTL(0))
 
 #Database User Example (Password is not here)
-myDatabase = database('travelschedulerserver.database.windows.net','TravelScheduler','TravelSchedulerServer',INSERTPASSWORDHERE)
-myDatabase.getEventList('FakeUser')
-myDatabase.getPassword('FakeUser')
+#myDatabase = database('travelschedulerserver.database.windows.net','TravelScheduler','TravelSchedulerServer','')
+#myDatabase.getEventList('FakeUser')
+#myDatabase.getPassword('FakeUser')
 #myDatabase.addEvent("Dinner at Chipotle", "FakeUser", "123 Fake Street", "456 Fake Road", datetime.datetime(2018, 7, 16, 17), datetime.datetime(2018, 7, 16, 18))
 #myDatabase.addUser('FakeUser','e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a','123 Fake Street','fake@fakemail.com','Fake Name', 15)
 
