@@ -11,10 +11,11 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from travelSchedulerBackend import database
 import keyring
 from dateutil import parser
+import os
 
 
 class Ui_MainWindow(object):
-    def Modify(self):
+    def add(self):
         USERNAME_KEY = 'Username_key'
         myDatabase = database('travelschedulerserver.database.windows.net','TravelScheduler','TravelSchedulerServer','G00dGrad3s')
         myUserName = keyring.get_password("TravelSchedulerUsername", USERNAME_KEY)
@@ -23,7 +24,10 @@ class Ui_MainWindow(object):
         myEndTime = self.dateTimeEdit_2.text()
         myCurrAddress = self.lineEdit_4.text()
         myDestAddress = self.lineEdit_5.text()
-        myDatabase.modifyEvent(myEventName, myUserName, myDestAddress, myCurrAddress, parser.parse(myStartTime), parser.parse(myEndTime))
+        myDatabase.addEvent(myEventName, myUserName, myDestAddress, myCurrAddress, parser.parse(myStartTime), parser.parse(myEndTime))
+
+    def Redirect(self):
+        os.system('python EventList.py')
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -117,7 +121,8 @@ class Ui_MainWindow(object):
         self.label_6.setText(_translate("MainWindow", "To"))
         self.label_7.setText(_translate("MainWindow", "Add an event"))
         self.pushButton.setText(_translate("MainWindow", "Submit"))
-        self.pushButton.clicked.connect(self.Modify)
+        self.pushButton.clicked.connect(self.add)
+        self.pushButton.clicked.connect(self.Redirect)
 
 
 if __name__ == "__main__":

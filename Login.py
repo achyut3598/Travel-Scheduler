@@ -11,18 +11,24 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from passlib.hash import bcrypt
 import pyodbc
 from travelSchedulerBackend import database
+import keyring
+import os
 
 
 class Ui_MainWindow(object):
 
     def login(self):
+        USERNAME_KEY = 'Username_key'
         username = self.lineEdit.text()
         password = self.lineEdit_2.text()
-        myDatabase = database('travelschedulerserver.database.windows.net','TravelScheduler','TravelSchedulerServer','INSERTPASSWORDHERE')
+        myDatabase = database('travelschedulerserver.database.windows.net','TravelScheduler','TravelSchedulerServer','G00dGrad3s')
         ogPassword = myDatabase.getPassword(username)
-        print (bcrypt.verify(password, ogPassword))
+        keyring.set_password("TravelSchedulerUsername", USERNAME_KEY, username)
+        keyring.set_password("TravelScheduler", username, password)
+        boo = bcrypt.verify(password, ogPassword)
+        if (boo):
+            os.system ('python Dashboard.py')
 
-        #Compare the passwords
         #Create a box seaying login successful or something and redirect to Dashboard
 
     def setupUi(self, MainWindow):
@@ -55,6 +61,7 @@ class Ui_MainWindow(object):
         self.lineEdit_2 = QtWidgets.QLineEdit(self.centralwidget)
         self.lineEdit_2.setGeometry(QtCore.QRect(450, 250, 113, 31))
         self.lineEdit_2.setObjectName("lineEdit_2")
+        self.lineEdit_2.setEchoMode(QtWidgets.QLineEdit.Password)
         self.label_7 = QtWidgets.QLabel(self.centralwidget)
         self.label_7.setGeometry(QtCore.QRect(220, 120, 351, 51))
         font = QtGui.QFont()
@@ -89,7 +96,6 @@ class Ui_MainWindow(object):
         self.label_7.setText(_translate("MainWindow", "Login"))
         self.pushButton.setText(_translate("MainWindow", "Submit"))
         self.pushButton.clicked.connect(self.login)
-
 
 if __name__ == "__main__":
     import sys

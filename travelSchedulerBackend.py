@@ -109,11 +109,11 @@ class database:
         self.cursor = self.cnxn.cursor()
 
     def getEventList(self,myUsername):
-        self.cursor.execute("select EventID, EventName, Username, ToAddress, FromAddress, StartTime, EndTime FROM Event WHERE Username = ?", myUsername)
+        self.cursor.execute("select EventName, Username, ToAddress, FromAddress, StartTime, EndTime FROM Event WHERE Username = ?", myUsername)
         rows = self.cursor.fetchall()
         #Print out statement for testing only
-        for row in rows:
-            print(row.EventID, row.EventName, row.Username, row.ToAddress, row.FromAddress, row.StartTime, row.EndTime)
+        #for row in rows:
+            #print(row.EventName, row.Username, row.ToAddress, row.FromAddress, row.StartTime, row.EndTime)
         #Print out statement for testing only
         return rows
 
@@ -140,6 +140,31 @@ class database:
             addCheck = False
         if(addCheck == True):
             self.cursor.execute("INSERT INTO Event(EventID, EventName, Username, ToAddress, FromAddress, StartTime, EndTime) values (?,?,?,?,?,?,?) ",myEventID,myEventName,myUsername,myToAddress,myFromAddress,myStartTime,myEndTime)
+            self.cnxn.commit()
+
+    def modifyEvent(self, myEventName, myUsername, myToAddress, myFromAddress, myStartTime, myEndTime):
+
+        #Grabbing Event ID Field
+        self.cursor.execute("select TOP 1 EventID FROM Event ORDER BY EventID DESC")
+        row = self.cursor.fetchone()
+        myEventID = row.EventID
+
+        #Input Check
+        addCheck = True
+        if(len(myEventName) > 50):
+            addCheck = False
+        if(len(myUsername) > 20):
+            addCheck = False
+        if(len(myToAddress) > 100):
+            addCheck = False
+        if(len(myFromAddress) > 100):
+            addCheck = False
+        if(len(str(myStartTime)) != 19):
+            addCheck = False
+        if(len(str(myEndTime)) != 19):
+            addCheck = False
+        if(addCheck == True):
+            self.cursor.execute ("UPDATE Event SET ToAddress=?, FromAddress=?, StartTime=?, EndTime=? WHERE EventName=? AND Username=?", (myToAddress, myFromAddress, myStartTime, myEndTime, myEventName, myUsername))
             self.cnxn.commit()
 
     #Returns hashed/salted password
@@ -185,7 +210,7 @@ myUser = user("Mathew", "237 Calhoun St, Cincinnati, OH 45219", myCalendar, date
 #print(myUser.getTTL(0))
 
 #Database User Example (Password is not here)
-#myDatabase = database('travelschedulerserver.database.windows.net','TravelScheduler','TravelSchedulerServer','')
+#myDatabase = database('travelschedulerserver.database.windows.net','TravelScheduler','TravelSchedulerServer','G00dGrad3s')
 #myDatabase.getEventList('FakeUser')
 #myDatabase.getPassword('FakeUser')
 #myDatabase.addEvent("Dinner at Chipotle", "FakeUser", "123 Fake Street", "456 Fake Road", datetime.datetime(2018, 7, 16, 17), datetime.datetime(2018, 7, 16, 18))
